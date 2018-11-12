@@ -2,9 +2,6 @@
 
 Conway's Game of Life implementation
 
-![](resources/conway.gif)
-
-
 ## Usage
 ```bash
 $ go build conway.go
@@ -32,5 +29,4 @@ Click on the terminal where you wish the seed live cells. You can do this at any
 In debug mode instead of displaying live cells, each tile will show the number living cells surrounding it.
 
 ## Example
-![](resources/glider-gun.png)
-![](resources/glider-gun-debug.png)
+![](resources/conway.gif)
