@@ -1,27 +1,32 @@
 package conway
 
+// Location is an x, y coordinate
 type Location struct {
 	X int
 	Y int
 }
 
+// Cell is a structure to containe the state of a location (alive or dead) and a count of it's living neighbours
 type Cell struct {
 	State bool
 	Rc    int8
 }
 
+// Field is a structure containing all data needed to represent the Life grid
 type Field struct {
 	Cells map[Location]*Cell
 }
 
-func NewField(m map[Location]*Cell) *Field {
-	f := new(Field)
-	for l, c := range m {
-		f.SetCell(l, c.State)
+// NewField creates a new Field struct given a list of locations to create live cells
+func NewField(m []Location) *Field {
+	f := &Field{make(map[Location]*Cell)}
+	for _, l := range m {
+		f.SetCell(l, true)
 	}
 	return f
 }
 
+// Neighbours are the surrounding locations of l
 func (l Location) Neighbours() [8]Location {
 	loc := [8]Location{}
 	adjust := 0
@@ -36,7 +41,9 @@ func (l Location) Neighbours() [8]Location {
 	return loc
 }
 
-func (f *Field) SetCell(l Location, State bool) {
+// SetCell updates the cell at location l to state, creating the cell if it does not already exist
+// It then updates the Rc count of surrounding cells
+func (f *Field) SetCell(l Location, state bool) {
 	var (
 		cell      *Cell
 		neighbour *Cell
@@ -45,7 +52,7 @@ func (f *Field) SetCell(l Location, State bool) {
 
 	neighbours := l.Neighbours()
 	// game.Log("%v: %v", l, neighbours)
-	if State {
+	if state {
 		// If we're setting a cell to alive, track all adjacent cells
 		for _, loc := range neighbours {
 			neighbour, exists = f.Cells[loc]
@@ -58,9 +65,9 @@ func (f *Field) SetCell(l Location, State bool) {
 	cell, exists = f.Cells[l]
 	if exists {
 		old := cell.State
-		cell.State = State
+		cell.State = state
 
-		if !old && State {
+		if !old && state {
 			// Dead -> Living
 			for _, loc := range neighbours {
 				neighbour, exists = f.Cells[loc]
@@ -68,7 +75,7 @@ func (f *Field) SetCell(l Location, State bool) {
 					neighbour.Rc++
 				}
 			}
-		} else if old && !State {
+		} else if old && !state {
 			// Living -> Dead
 			for _, loc := range neighbours {
 				neighbour, exists = f.Cells[loc]
@@ -78,13 +85,13 @@ func (f *Field) SetCell(l Location, State bool) {
 			}
 		}
 	} else {
-		cell = &Cell{State: State, Rc: 0}
+		cell = &Cell{State: state, Rc: 0}
 		for _, loc := range neighbours {
 			neighbour, exists = f.Cells[loc]
 			if exists && neighbour.State {
 				cell.Rc++
 			}
-			if exists && State {
+			if exists && state {
 				neighbour.Rc++
 			}
 		}
@@ -92,6 +99,7 @@ func (f *Field) SetCell(l Location, State bool) {
 	}
 }
 
+// Commit changes the state of all cells to reflect their Rc counts
 func (f *Field) Commit() {
 	// Update alive/dead status
 	for _, cell := range f.Cells {
@@ -106,6 +114,8 @@ func (f *Field) Commit() {
 
 }
 
+// Update handles adding untracked dead cells that have the potential to come alive in the next iteration
+// And removes dead cells that do not have the potential to come alive
 func (f *Field) Update() {
 	var exists bool
 	// Update relivant dead cells to track
@@ -128,6 +138,7 @@ func (f *Field) Update() {
 
 }
 
+// Count updates the Rc count of each cell to reflect the number of living neighbours it has
 func (f *Field) Count() {
 	var (
 		neighbours int8

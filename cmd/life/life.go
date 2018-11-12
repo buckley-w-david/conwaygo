@@ -2,14 +2,16 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"strconv"
 
 	"github.com/buckley-w-david/conwaygo/pkg/conway"
+	"github.com/buckley-w-david/conwaygo/pkg/encoding"
 
 	tl "github.com/JoelOtter/termloop"
 )
 
-type ConwayField struct {
+type conwayField struct {
 	*conway.Field
 }
 
@@ -19,42 +21,45 @@ var (
 	game     *tl.Game
 	tick     float64
 	start    bool
-	level    *LifeLevel
+	level    *lifeLevel
 	dirty    bool
-	Delay    float64
-	Debug    bool
+	field    *conway.Field
+	delay    float64
+	debug    bool
+	filename string
 )
 
-type LifeLevel struct {
+type lifeLevel struct {
 	*tl.BaseLevel
 	Bg       tl.Cell
 	Entities []tl.Drawable
 }
 
-func NewLifeLevel(bg tl.Cell) *LifeLevel {
+func newLifeLevel(bg tl.Cell) *lifeLevel {
 	lv := tl.NewBaseLevel(bg)
-	level := LifeLevel{Entities: make([]tl.Drawable, 0), Bg: bg, BaseLevel: lv}
+	level := lifeLevel{Entities: make([]tl.Drawable, 0), Bg: bg, BaseLevel: lv}
 	return &level
 }
 
-func (life *LifeLevel) SetBg(cell tl.Cell) {
-	life.Bg = cell
+func (level *lifeLevel) SetBg(cell tl.Cell) {
+	level.Bg = cell
 }
 
 // DrawBackground draws the background Cell bg to each Cell of the Screen s.
-func (l *LifeLevel) DrawBackground(s *tl.Screen) {
+func (level *lifeLevel) DrawBackground(s *tl.Screen) {
 	width, height := s.Size()
 
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {
-			s.RenderCell(i, j, &l.Bg)
+			s.RenderCell(i, j, &level.Bg)
 		}
 	}
 }
 
 func init() {
-	flag.BoolVar(&Debug, "debug", false, "Display in debug mode")
-	flag.Float64Var(&Delay, "delay", 0.2, "Seconds between updates")
+	flag.BoolVar(&debug, "debug", false, "Display in debug mode")
+	flag.Float64Var(&delay, "delay", 0.2, "Seconds between updates")
+	flag.StringVar(&filename, "f", "", "Life RLE file")
 	flag.Parse()
 
 	live = map[int8]*tl.Cell{}
@@ -68,17 +73,19 @@ func init() {
 	dirty = true
 }
 
-func (f *ConwayField) Tick(ev tl.Event) {
+func (f *conwayField) Tick(ev tl.Event) {
 	// Enable arrow key movement
 	switch ev.Type {
 	case tl.EventKey:
 		switch ev.Key {
 		case tl.KeySpace:
 			start = !start
+		case tl.KeyCtrlS:
+			encoding.SaveFieldToFile(field, "output.rle")
 		case tl.KeyCtrlD:
-			Debug = !Debug
+			debug = !debug
 			fg := tl.ColorDefault
-			if Debug {
+			if debug {
 				fg = tl.ColorBlue
 			} else {
 				fg = tl.ColorBlack
@@ -90,9 +97,9 @@ func (f *ConwayField) Tick(ev tl.Event) {
 			}
 			level.SetBg(cell)
 		case tl.KeyPgup:
-			Delay -= 0.01
+			delay -= 0.01
 		case tl.KeyPgdn:
-			Delay += 0.01
+			delay += 0.01
 		case tl.KeyArrowLeft:
 			x, y := level.Offset()
 			level.SetOffset(x+1, y)
@@ -110,7 +117,7 @@ func (f *ConwayField) Tick(ev tl.Event) {
 		x, y := level.Offset()
 		if ev.Key == tl.MouseLeft {
 			dirty = true
-			l := conway.Location{ev.MouseX - x, ev.MouseY - y}
+			l := conway.Location{X: ev.MouseX - x, Y: ev.MouseY - y}
 			cell, exists := f.Cells[l]
 			if exists {
 				f.SetCell(l, !cell.State)
@@ -121,7 +128,7 @@ func (f *ConwayField) Tick(ev tl.Event) {
 	}
 
 	tick += game.Screen().TimeDelta()
-	if tick > Delay && start {
+	if tick > delay && start {
 		tick = 0
 		if dirty {
 			f.Update()
@@ -133,42 +140,51 @@ func (f *ConwayField) Tick(ev tl.Event) {
 	}
 }
 
-func (m *ConwayField) Draw(screen *tl.Screen) {
+func (f *conwayField) Draw(screen *tl.Screen) {
 	var (
 		cell *conway.Cell
 	)
-	for l := range m.Cells {
-		cell, _ = m.Cells[l]
-		if Debug {
+	for l := range f.Cells {
+		cell, _ = f.Cells[l]
+		if debug {
 			screen.RenderCell(l.X, l.Y, live[cell.Rc])
 		} else if cell.State {
 			screen.RenderCell(l.X, l.Y, cellChar)
 		}
 	}
 }
+
 func main() {
 	game = tl.NewGame()
 	ch := '0'
 	fg := tl.ColorBlack
 	bg := tl.ColorBlack
 
-	if Debug {
+	if debug {
 		game.SetDebugOn(true)
 		fg = tl.ColorBlue
 	}
-	level = NewLifeLevel(tl.Cell{
+
+	var err error
+	if filename == "" {
+		field = conway.NewField([]conway.Location{})
+	} else {
+		field, err = encoding.LoadFieldFromFile(filename)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		dirty = true
+	}
+	// spew.Dump(field)
+	cField := &conwayField{field}
+	level = newLifeLevel(tl.Cell{
 		Bg: bg,
 		Fg: fg,
 		Ch: ch,
 	})
 
-	field := ConwayField{
-		&conway.Field{
-			map[conway.Location]*conway.Cell{},
-		},
-	}
-
-	level.AddEntity(&field)
+	level.AddEntity(cField)
 
 	game.Screen().SetLevel(level)
 	game.Start()
