@@ -2,6 +2,8 @@
 
 Conway's Game of Life implementation
 
+![](resources/conway.gif)
+
 
 ## Usage
 ```bash
