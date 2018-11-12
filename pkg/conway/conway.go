@@ -8,8 +8,8 @@ type Location struct {
 }
 
 type Cell struct {
-	state bool
-	rc    int8
+	State bool
+	Rc    int8
 }
 
 type Field struct {
@@ -30,7 +30,7 @@ func (l Location) Neighbours() [8]Location {
 	return loc
 }
 
-func (f *Field) SetCell(l Location, state bool) {
+func (f *Field) SetCell(l Location, State bool) {
 	var (
 		cell      *Cell
 		neighbour *Cell
@@ -39,7 +39,7 @@ func (f *Field) SetCell(l Location, state bool) {
 
 	neighbours := l.Neighbours()
 	// game.Log("%v: %v", l, neighbours)
-	if state {
+	if State {
 		// If we're setting a cell to alive, track all adjacent cells
 		for _, loc := range neighbours {
 			neighbour, exists = f.Cells[loc]
@@ -51,35 +51,35 @@ func (f *Field) SetCell(l Location, state bool) {
 
 	cell, exists = f.Cells[l]
 	if exists {
-		old := cell.state
-		cell.state = state
+		old := cell.State
+		cell.State = State
 
-		if !old && state {
+		if !old && State {
 			// Dead -> Living
 			for _, loc := range neighbours {
 				neighbour, exists = f.Cells[loc]
 				if exists {
-					neighbour.rc++
+					neighbour.Rc++
 				}
 			}
-		} else if old && !state {
+		} else if old && !State {
 			// Living -> Dead
 			for _, loc := range neighbours {
 				neighbour, exists = f.Cells[loc]
 				if exists {
-					neighbour.rc--
+					neighbour.Rc--
 				}
 			}
 		}
 	} else {
-		cell = &Cell{state: state, rc: 0}
+		cell = &Cell{State: State, Rc: 0}
 		for _, loc := range neighbours {
 			neighbour, exists = f.Cells[loc]
-			if exists && neighbour.state {
-				cell.rc++
+			if exists && neighbour.State {
+				cell.Rc++
 			}
-			if exists && state {
-				neighbour.rc++
+			if exists && State {
+				neighbour.Rc++
 			}
 		}
 		f.Cells[l] = cell
@@ -89,12 +89,12 @@ func (f *Field) SetCell(l Location, state bool) {
 func (f *Field) Commit() {
 	// Update alive/dead status
 	for _, cell := range f.Cells {
-		switch cell.rc {
+		switch cell.Rc {
 		case 2:
 		case 3:
-			cell.state = true
+			cell.State = true
 		default:
-			cell.state = false
+			cell.State = false
 		}
 	}
 
@@ -107,14 +107,14 @@ func (f *Field) Update() {
 		for _, loc := range l.Neighbours() {
 			_, exists = f.Cells[loc]
 			// If we're not tracking a location and it has a living adjacent cell
-			if !exists && cell.state {
+			if !exists && cell.State {
 				// start Tracking it
 				f.SetCell(loc, false)
 			}
 		}
 
 		// If we're tracking a dead cell with no living neighbours
-		if !cell.state && cell.rc == 0 {
+		if !cell.State && cell.Rc == 0 {
 			// Stop
 			delete(f.Cells, l)
 		}
@@ -133,10 +133,10 @@ func (f *Field) Count() {
 		neighbours = 0
 		for _, loc := range l.Neighbours() {
 			neighbour, exists = f.Cells[loc]
-			if exists && neighbour.state {
+			if exists && neighbour.State {
 				neighbours++
 			}
 		}
-		cell.rc = neighbours
+		cell.Rc = neighbours
 	}
 }
