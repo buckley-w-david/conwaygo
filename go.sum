@@ -1,5 +1,6 @@
 github.com/JoelOtter/termloop v0.0.0-20181104224954-d6a38e60b514 h1:SpwG6UVQKeudH/h0M/ZiTC/MrQuCxKG+dU7PvhHqqDY=
 github.com/JoelOtter/termloop v0.0.0-20181104224954-d6a38e60b514/go.mod h1:Tie7OOEgasw91JpzA8UywemPyGehxZ06Gqtl5B1/vXI=
+github.com/JoelOtter/termloop v0.0.0-20181112204055-0f8867e43cbb h1:0Lc5bFgiL6oImFgMORXSUeCTvVJvEX0A7SHS21+6t2s=
 github.com/JoelOtter/termloop v0.0.0-20181112204055-0f8867e43cbb/go.mod h1:Tie7OOEgasw91JpzA8UywemPyGehxZ06Gqtl5B1/vXI=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/mattn/go-runewidth v0.0.3 h1:a+kO+98RDGEfo6asOGMmpodZq4FNtnGP54yps8BzLR4=

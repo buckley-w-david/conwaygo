@@ -1,32 +1,78 @@
 package encoding
 
-// LoadFirstRoundFromRLE generates a new field from a rle-text-file
-func LoadFieldFromFile(width, height int, filename string) {
-	// 	var length int
-	// 	var field *Field
-	// 	x := 0
-	// 	y := 0
-	// 	finfo, err := os.Stat(filename)
-	// 	if err != nil {
-	// 		fmt.Println(filename + " doesn't exist")
-	// 		return GenerateFirstRound(width, height)
-	// 	}
-	// 	if finfo.IsDir() {
-	// 		fmt.Println(filename + " is a directory")
-	// 		return GenerateFirstRound(width, height)
-	// 	}
-	//
-	// 	file, err := os.Open(filename)
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	}
-	// 	defer file.Close()
+import (
+	"bufio"
+	"errors"
+	"fmt"
+	"os"
+	"regexp"
+	"strconv"
+
+	"github.com/buckley-w-david/conwaygo/pkg/conway"
+)
+
+var (
+	xre *regexp.Regexp
+	yre *regexp.Regexp
+	lre *regexp.Regexp
+)
+
+func init() {
+	xre = regexp.MustCompile("x ?= ?(\\d+)")
+	yre = regexp.MustCompile("y ?= ?(\\d+)")
+	lre = regexp.MustCompile(`(((\d*)([bo]+))([$!]*))`)
+}
+
+// LoadFieldFromFile generates a new field from a rle-text-file
+func LoadFieldFromFile(filename string) (*conway.Field, error) {
+	var (
+		header string
+		width  int
+		height int
+	)
+	field := new(conway.Field)
+	finfo, err := os.Stat(filename)
+
+	if err != nil {
+		return nil, err
+	}
+	if finfo.IsDir() {
+		return nil, errors.New(filename + " is a directory")
+	}
+
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	if scanner.Scan() {
+		header = scanner.Text()
+	} else {
+		return nil, errors.New("No header found")
+	}
+
+	xm := xre.FindStringSubmatch(header)
+	ym := yre.FindStringSubmatch(header)
+	if len(xm) == 2 && len(ym) == 2 {
+		pint, _ := strconv.ParseInt(xm[1], 10, 64)
+		width = int(pint)
+		pint, _ = strconv.ParseInt(ym[1], 10, 64)
+		height = int(pint)
+	} else {
+		return nil, errors.New("Unable to parse header line")
+	}
+	field = conway.NewField(map[conway.Location]*conway.Cell{})
+	fmt.Println(width, height)
+
+	for scanner.Scan() {
+		// line := scanner.Text()
+	}
 	//
 	// 	xre := regexp.MustCompile("x ?= ?(\\d+)")
 	// 	yre := regexp.MustCompile("y ?= ?(\\d+)")
 	// 	lre := regexp.MustCompile(`(((\d*)([bo]+))([$!]*))`)
 	//
-	// 	scanner := bufio.NewScanner(file)
 	// 	for scanner.Scan() {
 	// 		line := scanner.Text()
 	// 		if len(line) > 0 {
@@ -83,4 +129,9 @@ func LoadFieldFromFile(width, height int, filename string) {
 	// 	}
 	//
 	// 	return field
+	return field, nil
+}
+
+func SaveFieldToFile(field *conway.Field, filename string) error {
+	return nil
 }
