@@ -29,6 +29,6 @@ Click on the terminal where you wish the seed live cells. You can do this at any
 In debug mode instead of displaying live cells, each tile will show the number living cells surrounding it.
 
 ## Example
-![](resources/conway.gif)
+![](https://raw.githubusercontent.com/buckley-w-david/conwaygo/master/resources/conway.gif)
 
 *Note* This gif is a little out of date, now that the code is split up into a `pkg` and `cmd` directory, build the project by running `go build cmd/life/life.go`
