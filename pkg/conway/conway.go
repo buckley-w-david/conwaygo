@@ -14,6 +14,14 @@ type Field struct {
 	Cells map[Location]*Cell
 }
 
+func NewField(m map[Location]*Cell) *Field {
+	f := new(Field)
+	for l, c := range m {
+		f.SetCell(l, c.State)
+	}
+	return f
+}
+
 func (l Location) Neighbours() [8]Location {
 	loc := [8]Location{}
 	adjust := 0
