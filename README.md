@@ -4,9 +4,9 @@ Conway's Game of Life implementation
 
 ## Usage
 ```bash
-$ go build conway.go
-$ ./conway -h
-Usage of ./conway:
+$ go build cmd/life/life.go
+$ ./life -h
+Usage of ./life:
   -debug
       Display in debug mode
   -delay float
@@ -31,4 +31,4 @@ In debug mode instead of displaying live cells, each tile will show the number l
 ## Example
 ![](resources/conway.gif)
 
-*note* This gif is a little out of date, now that the code is split up into a `pkg` and `cmd` directory, build the project by running `go build cmd/life/life.go`
+*Note* This gif is a little out of date, now that the code is split up into a `pkg` and `cmd` directory, build the project by running `go build cmd/life/life.go`
