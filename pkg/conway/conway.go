@@ -1,7 +1,5 @@
 package conway
 
-//"github.com/davecgh/go-spew/spew"
-
 type Location struct {
 	X int
 	Y int

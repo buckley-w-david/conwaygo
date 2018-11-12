@@ -1,6 +1,9 @@
 github.com/JoelOtter/termloop v0.0.0-20181104224954-d6a38e60b514 h1:SpwG6UVQKeudH/h0M/ZiTC/MrQuCxKG+dU7PvhHqqDY=
 github.com/JoelOtter/termloop v0.0.0-20181104224954-d6a38e60b514/go.mod h1:Tie7OOEgasw91JpzA8UywemPyGehxZ06Gqtl5B1/vXI=
-github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
+github.com/buckley-w-david/conwaygo v0.0.0-20181112200713-3cbee40137f7 h1:E+J7wtZ1KRTUgC20Mz43iGFbjamJ/japtPE1hbW90pM=
+github.com/buckley-w-david/conwaygo v0.0.0-20181112200713-3cbee40137f7/go.mod h1:AmKJpaxLEcCN2/OrDUAUk4Xv1w7BIc5c8ZBr7VaIr7w=
+github.com/buckley-w-david/conwaygo v0.0.0-20181112202128-c4948ca9c871 h1:87wfg3xsZHKTPx+zcX99jQuDXQinsIiHE4QPYjfeVhk=
+github.com/buckley-w-david/conwaygo v0.0.0-20181112202128-c4948ca9c871/go.mod h1:AmKJpaxLEcCN2/OrDUAUk4Xv1w7BIc5c8ZBr7VaIr7w=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/mattn/go-runewidth v0.0.3 h1:a+kO+98RDGEfo6asOGMmpodZq4FNtnGP54yps8BzLR4=
 github.com/mattn/go-runewidth v0.0.3/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
